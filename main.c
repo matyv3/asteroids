@@ -4,6 +4,21 @@
 #include <conio.h>
 #include <stdbool.h>
 
+// posiciones jugadores
+int posJ1[2];
+int posJ2[2];
+// limites
+int fondo;
+int minXJ1;
+int maxXJ1;
+int minXJ2;
+int maxXJ2;
+// tablero
+int vidasJ1;
+int vidasJ2;
+int puntosJ1;
+int puntosJ2;
+
 void damePosicion(int x, int y){
     HANDLE hCon;
     hCon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -11,6 +26,25 @@ void damePosicion(int x, int y){
     dwPos.X = x;
     dwPos.Y = y;
     SetConsoleCursorPosition(hCon, dwPos);
+}
+
+void tableroSuperior(){
+    damePosicion(2, 2);
+    printf("JUGADOR 1");
+    damePosicion(2, 4);
+    printf("Vidas: %i", vidasJ1);
+    damePosicion(16,4);
+    printf("Puntos: %i", puntosJ1);
+
+    damePosicion(138, 2);
+    printf("JUGADOR 2");
+    damePosicion(122, 4);
+    printf("Vidas: %i", vidasJ2);
+    damePosicion(138,4);
+    printf("Puntos: %i", puntosJ2);
+
+    damePosicion(70, 2);
+    printf("ASTEROIDS");
 }
 
 void dibujarTablero(){
@@ -54,43 +88,86 @@ void dibujarTablero(){
     printf("%c", 203);
 }
 
-void nave1(int x, int y){
-    damePosicion(x, y);
+void nave1(){
+    damePosicion(posJ1[0], posJ2[1]);
     printf("    /\\ ");
-    damePosicion(x, y+1);
-    printf("  %c_%c%c_%c",186,178,178,186);
-    damePosicion(x, y+2);
-    printf("<%c%c%cP1%c%c%c>",178,178,178,178,178,178,178,178);
+    damePosicion(posJ1[0], posJ2[1]+1);
+    printf("   %c%c%c%c",186,178,178,186);
+    damePosicion(posJ1[0], posJ2[1]+2);
+    printf("  <%cP1%c>",178,178);
 }
-void nave2(int x, int y){
-    damePosicion(x, y);
+void nave2(){
+    damePosicion(posJ2[0], posJ2[1]);
     printf("    /\\ ");
-    damePosicion(x, y+1);
-    printf("  %c_%c%c_%c",186,178,178,186);
-    damePosicion(x, y+2);
-    printf("<%c%c%cP2%c%c%c>",178,178,178,178,178,178,178,178);
+    damePosicion(posJ2[0], posJ2[1]+1);
+    printf("   %c%c%c%c",186,178,178,186);
+    damePosicion(posJ2[0], posJ2[1]+2);
+    printf("  <%cP2%c>",178,178);
 }
 
-void moverDerecha(int x, int y){
-    nave1(x,y);
+
+void mover(char tecla){
+
+    // teclas
+    //char flechaArriba = 'H';
+    char flechaIzquierda = 'K';
+    char flechaDerecha = 'M';
+    // jugador 1
+    if(tecla == flechaDerecha && posJ2[0] < maxXJ2 ){
+        damePosicion(posJ2[0],posJ2[1]+2);
+        printf(" ");
+        posJ2[0] ++;
+        nave2();
+    }
+    if(tecla == flechaIzquierda && posJ2[0] > minXJ2){
+        damePosicion(posJ1[0],posJ1[1]+2);
+        printf(" ");
+        posJ2[0] --;
+        nave2();
+    }
+    // jugador 2
+    if(tecla == 'a' && posJ1[0] > minXJ1){
+        damePosicion(posJ1[0],posJ1[1]+2);
+        printf(" ");
+        posJ1[0] --;
+        nave1();
+    }
+    if(tecla == 'd' && posJ1[0] < maxXJ1){
+        damePosicion(posJ1[0],posJ1[1]+2);
+        printf(" ");
+        posJ1[0] ++;
+        nave1();
+    }
+
 }
 
 int main()
 {
-    // teclas
-    char flechaArriba = 'H';
-    char flechaIzquierda = 'K';
-    char flechaDerecha = 'M';
-    // posiciones
-    int fondo = 47;
-    int posJ1[2] = {30, fondo};
-    int posJ2[2] = {105, fondo};
+    // tablero
+    puntosJ1 = 0;
+    puntosJ2 = 0;
+    vidasJ1 = 3;
+    vidasJ2 = 3;
 
-    nave1(posJ1[0],posJ1[1]);
-    nave2(posJ2[0],posJ2[1]);
+    // posiciones jugadores
+    fondo = 47;
+    posJ1[0] = 30;
+    posJ1[1] = fondo;
+    posJ2[0] = 105;
+    posJ2[1] = fondo;
 
+    minXJ1 = 2;
+    maxXJ1 = 64;
+    minXJ2 = 75;
+    maxXJ2 = 138;
+
+    nave1();
+    nave2();
+
+    //nave1(posJ1[0],posJ1[1]);
+    //nave2(posJ2[0],posJ2[1]);
+    tableroSuperior();
     dibujarTablero();
-
 
 
     //Preparar pantalla, dibujar bordes, vidas, puntaje, asteroide y personaje.
@@ -110,10 +187,7 @@ int main()
 			//Dicho botón se va a guardar en la variable tecla.
 			//Luego hay que realizar las acciones correspondientes si la tecla es la que esperamos.
 			//Por ejemplo: mover el personaje o disparar.
-
-                if( tecla == flechaDerecha){
-                    moverDerecha(posJ1[0]+1, posJ1[1]);
-                }
+                mover(tecla);
 			}
 
 		//Si se queda sin vida, se debe cambiar el valor de la variable gameOver para que salga del while.

@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1543114308 source:c:\users\maty\desktop\tp\main.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+	<conio.h>
+	<stdbool.h>
+

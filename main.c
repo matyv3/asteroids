@@ -4,6 +4,10 @@
 #include <conio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <time.h>
+
+// threads https://askubuntu.com/questions/568068/multithreading-in-codeblocks
 
 // posiciones jugadores
 int posJ1[2];
@@ -93,26 +97,24 @@ void dibujarTablero(){
 
 void nave1(){
     damePosicion(posJ1[0], posJ2[1]);
-    printf("    /\\ ");
+    printf("  /\\ ");
     damePosicion(posJ1[0], posJ2[1]+1);
-    printf("   %c%c%c%c",186,178,178,186);
+    printf(" %c%c%c%c",186,178,178,186);
     damePosicion(posJ1[0], posJ2[1]+2);
-    printf("  <%cP1%c>",178,178);
+    printf("<%cP1%c>",178,178);
 }
 void nave2(){
     damePosicion(posJ2[0], posJ2[1]);
-    printf("    /\\ ");
+    printf("  /\\ ");
     damePosicion(posJ2[0], posJ2[1]+1);
-    printf("   %c%c%c%c",186,178,178,186);
+    printf(" %c%c%c%c",186,178,178,186);
     damePosicion(posJ2[0], posJ2[1]+2);
-    printf("  <%cP2%c>",178,178);
+    printf("<%cP2%c>",178,178);
 }
 
 
 void mover(char tecla){
-
     // teclas
-    //char flechaArriba = 'H';
     char flechaIzquierda = 'K';
     char flechaDerecha = 'M';
     // jugador 1
@@ -123,15 +125,19 @@ void mover(char tecla){
         nave2();
     }
     if(tecla == flechaIzquierda && posJ2[0] > minXJ2){
-        damePosicion(posJ1[0],posJ1[1]+2);
-        printf(" ");
+        damePosicion(posJ2[0],posJ2[1]+1);
+        printf("       ");
+        damePosicion(posJ2[0],posJ2[1]+2);
+        printf("        ");
         posJ2[0] --;
         nave2();
     }
     // jugador 2
     if(tecla == 'a' && posJ1[0] > minXJ1){
+        damePosicion(posJ1[0],posJ1[1]+1);
+        printf("       ");
         damePosicion(posJ1[0],posJ1[1]+2);
-        printf(" ");
+        printf("        ");
         posJ1[0] --;
         nave1();
     }
@@ -141,13 +147,28 @@ void mover(char tecla){
         posJ1[0] ++;
         nave1();
     }
-
+    //pthread_exit(NULL);
+    return;
 }
 
 void disparar(int jugador){
     if(jugador == 1){
-        int trayectoriaX = posJ1[0] + 4;
+        int trayectoriaX = posJ1[0] + 2;
         int trayectoriaY = posJ1[1] - 1;
+        while(trayectoriaY > limiteYSuperior){
+            int aux = trayectoriaY;
+            damePosicion(trayectoriaX, trayectoriaY--);
+            printf("*");
+            fflush(stdout);
+            usleep(20000);
+            damePosicion(trayectoriaX, aux);
+            printf(" ");
+
+        }
+    }
+    if(jugador == 2){
+        int trayectoriaX = posJ2[0] + 2;
+        int trayectoriaY = posJ2[1] - 1;
         while(trayectoriaY > limiteYSuperior){
             int aux = trayectoriaY;
             damePosicion(trayectoriaX, trayectoriaY--);
@@ -155,15 +176,28 @@ void disparar(int jugador){
             usleep(20000);
             damePosicion(trayectoriaX, aux);
             printf(" ");
+
         }
     }
-    if(jugador == 2){
-        damePosicion(posJ2[0], posJ2[1]);
+    //pthread_exit(NULL);
+    return;
+}
+
+
+void asteroide(){
+    srand(time(NULL));
+    int posicionX = rand();
+    int posicionY = 6;
+    while(posicionY < limiteYInferior){
+        damePosicion(posicionX, posicionY++);
+        printf("*");
     }
 }
 
 int main()
 {
+    //pthread_t thread1,thread2,thread3,thread4,thread4;
+
     // tablero
     puntosJ1 = 0;
     puntosJ2 = 0;
@@ -181,9 +215,9 @@ int main()
     char teclaDisparoJ2 = 'H';
 
     minXJ1 = 2;
-    maxXJ1 = 64;
+    maxXJ1 = 68;
     minXJ2 = 75;
-    maxXJ2 = 138;
+    maxXJ2 = 142;
 
     limiteYSuperior = 6;
     limiteYInferior = 50;
@@ -215,12 +249,15 @@ int main()
             //Luego hay que realizar las acciones correspondientes si la tecla es la que esperamos.
             //Por ejemplo: mover el personaje o disparar.
                 mover(tecla);
+                //pthread_create( &threads[thread_cont], NULL, mover, (void*) tecla);
 
                 if(tecla == teclaDisparoJ1){
                     disparar(1);
+                    //pthread_create( &threads[thread_cont], NULL, disparar, 1);
                 }
                 if(tecla == teclaDisparoJ2){
                     disparar(2);
+                    //pthread_create( &threads[thread_cont], NULL, disparar, 2);
                 }
             }
 

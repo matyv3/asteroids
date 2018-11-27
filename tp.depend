@@ -7,10 +7,12 @@
 	<stdbool.h>
 	<unistd.h>
 
-1543253091 source:c:\users\eugenio\desktop\maty\asteroids\main.c
+1543339946 source:c:\users\eugenio\desktop\maty\asteroids\main.c
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
 	<conio.h>
 	<stdbool.h>
+	<unistd.h>
+	<pthread.h>
 

@@ -1,11 +1,13 @@
 # depslib dependency file v1.0
-1543280198 source:c:\users\maty\desktop\tp\main.c
+1543362160 source:c:\users\maty\desktop\tp\main.c
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
 	<conio.h>
 	<stdbool.h>
 	<unistd.h>
+	<pthread.h>
+	<time.h>
 
 1543339946 source:c:\users\eugenio\desktop\maty\asteroids\main.c
 	<stdio.h>

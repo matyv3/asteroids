@@ -183,20 +183,26 @@ void disparar(int jugador){
     return;
 }
 
-
 void asteroide(){
     srand(time(NULL));
-    int posicionX = rand();
-    int posicionY = 6;
+    //int posicionX = 5 + rand() % (31 - 5); //entre 5 y 10
+    int posicionX = 5;
+    //int posicionX = minXJ1 + rand() % (maxXJ2 + 1 - minXJ1);
+    int posicionY = limiteYSuperior + 1;
     while(posicionY < limiteYInferior){
+        int aux = posicionY;
         damePosicion(posicionX, posicionY++);
         printf("*");
+        usleep(20000);
+        damePosicion(posicionX, aux);
+        printf(" ");
     }
+    return;
 }
 
 int main()
 {
-    //pthread_t thread1,thread2,thread3,thread4,thread4;
+    pthread_t thread_asteroide;
 
     // tablero
     puntosJ1 = 0;
@@ -236,6 +242,8 @@ int main()
 
 	bool gameOver = false;
 	while(!gameOver){
+
+        pthread_create( &thread_asteroide, NULL, asteroide, NULL);
 
 		//En la primera iteración del programa, la condición del while se va a cumplir y siempre va a entrar acá.
 		//Acá van todos los comandos que tienen que ocurrir segundo a segundo mientras el programa se ejecuta.

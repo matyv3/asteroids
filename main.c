@@ -146,13 +146,14 @@ void mover(char tecla){
 
 void disparar(int jugador){
     if(jugador == 1){
-        int trayectoriaX = posJ1[0];
-        int trayectoriaY = posJ1[1];
+        int trayectoriaX = posJ1[0] + 4;
+        int trayectoriaY = posJ1[1] - 1;
         while(trayectoriaY > limiteYSuperior){
+            int aux = trayectoriaY;
             damePosicion(trayectoriaX, trayectoriaY--);
             printf("*");
             usleep(20000);
-            damePosicion(trayectoriaX, trayectoriaY);
+            damePosicion(trayectoriaX, aux);
             printf(" ");
         }
     }

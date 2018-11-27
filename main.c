@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 // posiciones jugadores
 int posJ1[2];
@@ -13,6 +14,8 @@ int minXJ1;
 int maxXJ1;
 int minXJ2;
 int maxXJ2;
+int limiteYSuperior;
+int limiteYInferior;
 // tablero
 int vidasJ1;
 int vidasJ2;
@@ -141,6 +144,23 @@ void mover(char tecla){
 
 }
 
+void disparar(int jugador){
+    if(jugador == 1){
+        int trayectoriaX = posJ1[0];
+        int trayectoriaY = posJ1[1];
+        while(trayectoriaY > limiteYSuperior){
+            damePosicion(trayectoriaX, trayectoriaY--);
+            printf("*");
+            usleep(20000);
+            damePosicion(trayectoriaX, trayectoriaY);
+            printf(" ");
+        }
+    }
+    if(jugador == 2){
+        damePosicion(posJ2[0], posJ2[1]);
+    }
+}
+
 int main()
 {
     // tablero
@@ -156,10 +176,16 @@ int main()
     posJ2[0] = 105;
     posJ2[1] = fondo;
 
+    char teclaDisparoJ1 = 'w';
+    char teclaDisparoJ2 = 'H';
+
     minXJ1 = 2;
     maxXJ1 = 64;
     minXJ2 = 75;
     maxXJ2 = 138;
+
+    limiteYSuperior = 6;
+    limiteYInferior = 50;
 
     nave1();
     nave2();
@@ -184,11 +210,18 @@ int main()
 		//Si apretan un botón:
         if(kbhit()){
             char tecla = getch();
-			//Dicho botón se va a guardar en la variable tecla.
-			//Luego hay que realizar las acciones correspondientes si la tecla es la que esperamos.
-			//Por ejemplo: mover el personaje o disparar.
+            //Dicho botón se va a guardar en la variable tecla.
+            //Luego hay que realizar las acciones correspondientes si la tecla es la que esperamos.
+            //Por ejemplo: mover el personaje o disparar.
                 mover(tecla);
-			}
+
+                if(tecla == teclaDisparoJ1){
+                    disparar(1);
+                }
+                if(tecla == teclaDisparoJ2){
+                    disparar(2);
+                }
+            }
 
 		//Si se queda sin vida, se debe cambiar el valor de la variable gameOver para que salga del while.
 	}

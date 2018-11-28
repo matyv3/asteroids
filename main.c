@@ -36,7 +36,7 @@ int posicionAsteroide2Y;
 
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
-//pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex3 = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_t thread_game, thread_asteroide1, thread_asteroide2, thread_disparo1, thread_disparo2, thread_mover1, thread_mover2;
 
@@ -171,37 +171,50 @@ void mover2(char tecla){
     DISPAROS
 
 */
-void disparar1(){
-    int trayectoriaX = posJ1[0] + 2;
-    int trayectoriaY = posJ1[1] - 1;
-    while(trayectoriaY > limiteYSuperior){
-        int aux = trayectoriaY;
-        damePosicion(trayectoriaX, trayectoriaY--);
-        printf("*");
-        usleep(20000);
-        damePosicion(trayectoriaX, aux);
-        printf(" ");
-
-    }
-}
+int trayectoriaDisparo1X;
+int trayectoriaDisparo1Y;
 int trayectoriaDisparo2X;
 int trayectoriaDisparo2Y;
+
+void disparar1(){
+    trayectoriaDisparo1X = posJ1[0] + 2;
+    trayectoriaDisparo1Y = posJ1[1] - 1;
+    while(trayectoriaDisparo1Y > limiteYSuperior){
+        int aux = trayectoriaDisparo1Y;
+        damePosicion(trayectoriaDisparo1X, trayectoriaDisparo1Y--);
+        printf("*");
+        usleep(20000);
+        damePosicion(trayectoriaDisparo1X, aux);
+        printf(" ");
+        if(posicionAsteroide1X == trayectoriaDisparo1X && posicionAsteroide1Y == trayectoriaDisparo1Y){
+            damePosicion(trayectoriaDisparo1X, trayectoriaDisparo1Y);
+            printf(" ");
+            return;
+        }
+    }
+    trayectoriaDisparo1X = 0;
+    trayectoriaDisparo1Y = 0;
+}
+
+
 void disparar2(){
     trayectoriaDisparo2X = posJ2[0] + 2;
     trayectoriaDisparo2Y = posJ2[1] - 1;
     while(trayectoriaDisparo2Y > limiteYSuperior){
-        int aux = trayectoriaY;
-        damePosicion(trayectoriaDisparo2X, trayectoriaY--);
+        int aux = trayectoriaDisparo2Y;
+        damePosicion(trayectoriaDisparo2X, trayectoriaDisparo2Y--);
         printf("*");
         usleep(20000);
         damePosicion(trayectoriaDisparo2X, aux);
         printf(" ");
-        if(trayectoriaDisparo2X == posicionAsteroide2X && trayectoriaDisparo2Y == posicionAsteroide2Y){
-            puntosJ2++;
-            tableroSuperior();
-            break;
+        if(posicionAsteroide2X == trayectoriaDisparo2X && posicionAsteroide2Y == trayectoriaDisparo2Y){
+            damePosicion(trayectoriaDisparo2X, trayectoriaDisparo2Y);
+            printf(" ");
+            return;
         }
     }
+    trayectoriaDisparo2X = 0;
+    trayectoriaDisparo2Y = 0;
 }
 
 /**
@@ -224,13 +237,20 @@ void asteroide1(){
         pthread_mutex_lock( &mutex2 );
         damePosicion(posicionAsteroide1X, posicionAsteroide1Y++);
         pthread_mutex_unlock( &mutex2 );
-        printf("*");
+        printf("%c",184);
         usleep(100000);
         pthread_mutex_lock( &mutex2 );
         damePosicion(posicionAsteroide1X, aux);
         pthread_mutex_unlock( &mutex2 );
         printf(" ");
-        if( (posicionAsteroide1X == posJ1[0]
+
+        if(posicionAsteroide1X == trayectoriaDisparo1X && posicionAsteroide1Y == trayectoriaDisparo1Y){
+            puntosJ1++;
+            tableroSuperior();
+            break;
+        }
+
+        if( (posicionAsteroide1X== posJ1[0]
               || posicionAsteroide1X == posJ1[0]+1
               || posicionAsteroide1X == posJ1[0]+2
               || posicionAsteroide1X == posJ1[0]+3
@@ -262,12 +282,19 @@ void asteroide2(){
         pthread_mutex_lock( &mutex2 );
         damePosicion(posicionAsteroide2X, posicionAsteroide2Y++);
         pthread_mutex_unlock( &mutex2 );
-        printf("*");
+        printf("%c",184);
         usleep(100000);
         pthread_mutex_lock( &mutex2 );
         damePosicion(posicionAsteroide2X, aux);
         pthread_mutex_unlock( &mutex2 );
         printf(" ");
+
+        if(posicionAsteroide2X == trayectoriaDisparo2X && posicionAsteroide2Y == trayectoriaDisparo2Y){
+            puntosJ2++;
+            tableroSuperior();
+            break;
+        }
+
         if( (posicionAsteroide2X == posJ2[0]
              || posicionAsteroide2X == posJ2[0]+1
              || posicionAsteroide2X == posJ2[0]+2
@@ -369,7 +396,6 @@ int main()
                     //pthread_create( &thread_mover2, NULL, mover2, (void*) tecla);
                 //}
             }
-            //pthread_create( &threads[thread_cont], NULL, mover, (void*) tecla);
 
             if(tecla == teclaDisparoJ1 && vidasJ1 > 0){
                 disparar1();

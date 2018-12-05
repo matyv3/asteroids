@@ -232,6 +232,9 @@ int main()
     limiteYSuperior = 6;
     limiteYInferior = 50;
 
+    posicionAsteroide1Y = limiteYSuperior;
+    posicionAsteroide2Y = limiteYSuperior;
+
     nave1();
     nave2();
 
@@ -242,28 +245,99 @@ int main()
 
     gameStart = false;
 
+    bool asteroidesJ1 = false;
+    bool asteroidesJ2 = false;
+
 	bool gameOver = false;
 	while(!gameOver){
 
+        usleep(20000);
 
-        /*if(gameStart){
+        if(gameStart){
             usleep(10000);
             gameStart = false;
-        }*/
-        usleep(20000);
+            posicionAsteroide1X = minXJ1 + rand() % (maxXJ1 + 1 - minXJ1);
+            posicionAsteroide2X = minXJ2 + rand() % (maxXJ2 + 1 - minXJ2);
+            asteroidesJ1 = true;
+            asteroidesJ2 = true;
+        }
 
         // asteroides
         srand(time(NULL));
-        posicionAsteroide1X = minXJ1 + rand() % (maxXJ1 + 1 - minXJ1);
-        if(posicionAsteroide1Y < limiteYInferior){
-            usleep(10000);
-            damePosicion(posicionAsteroide1X, posicionAsteroide1Y);
-            printf(" ");
-            damePosicion(posicionAsteroide1X, posicionAsteroide1Y+1);
-            printf("*");
-            posicionAsteroide1Y++;
-        }else{
-            posicionAsteroide1Y = limiteYSuperior;
+        if(asteroidesJ1){
+            // jugador 1
+            if(posicionAsteroide1Y < limiteYInferior -1){
+                usleep(10000);
+                damePosicion(posicionAsteroide1X, posicionAsteroide1Y);
+                printf(" ");
+                damePosicion(posicionAsteroide1X, posicionAsteroide1Y+1);
+                printf("*");
+                posicionAsteroide1Y++;
+                // colision con disparo
+                if( posicionAsteroide1X == trayectoriaDisparo1X && posicionAsteroide1Y == trayectoriaDisparo1Y && disparoJ1 ){
+                    damePosicion(posicionAsteroide1X, posicionAsteroide1Y);
+                    printf(" ");
+                    posicionAsteroide1Y = limiteYSuperior + 1;
+                    puntosJ1++;
+                    tableroSuperior();
+                }
+                // colision con jugador
+                if((posicionAsteroide1X== posJ1[0]
+                      || posicionAsteroide1X == posJ1[0]+1
+                      || posicionAsteroide1X == posJ1[0]+2
+                      || posicionAsteroide1X == posJ1[0]+3
+                      || posicionAsteroide1X == posJ1[0]+4
+                      || posicionAsteroide1X == posJ1[0]+5) && posicionAsteroide1Y == posJ1[1] - 1 ){
+                    damePosicion(posicionAsteroide1X, posicionAsteroide1Y);
+                    posicionAsteroide1Y = limiteYSuperior + 1;
+                    printf(" ");
+                    vidasJ1--;
+                    tableroSuperior();
+                }
+            }else{
+                damePosicion(posicionAsteroide1X, posicionAsteroide1Y);
+                printf(" ");
+                posicionAsteroide1Y = limiteYSuperior + 1;
+                posicionAsteroide1X = minXJ1 + rand() % (maxXJ1 + 1 - minXJ1);
+            }
+        }
+
+        if(asteroidesJ2){
+            // jugador 1
+            if(posicionAsteroide2Y < limiteYInferior -1){
+                usleep(10000);
+                damePosicion(posicionAsteroide2X, posicionAsteroide2Y);
+                printf(" ");
+                damePosicion(posicionAsteroide2X, posicionAsteroide2Y+1);
+                printf("*");
+                posicionAsteroide2Y++;
+                // colision con disparo
+                if( posicionAsteroide2X == trayectoriaDisparo2X && posicionAsteroide2Y == trayectoriaDisparo2Y && disparoJ2 ){
+                    damePosicion(posicionAsteroide2X, posicionAsteroide2Y);
+                    printf(" ");
+                    posicionAsteroide2Y = limiteYSuperior + 1;
+                    puntosJ2++;
+                    tableroSuperior();
+                }
+                // colision con jugador
+                if((posicionAsteroide2X== posJ2[0]
+                      || posicionAsteroide2X == posJ2[0]+1
+                      || posicionAsteroide2X == posJ2[0]+2
+                      || posicionAsteroide2X == posJ2[0]+3
+                      || posicionAsteroide2X == posJ2[0]+4
+                      || posicionAsteroide2X == posJ2[0]+5) && posicionAsteroide2Y == posJ2[1] - 1 ){
+                    damePosicion(posicionAsteroide2X, posicionAsteroide2Y);
+                    posicionAsteroide2Y = limiteYSuperior + 1;
+                    printf(" ");
+                    vidasJ2--;
+                    tableroSuperior();
+                }
+            }else{
+                damePosicion(posicionAsteroide2X, posicionAsteroide2Y);
+                printf(" ");
+                posicionAsteroide2Y = limiteYSuperior + 1;
+                posicionAsteroide2X = minXJ2 + rand() % (maxXJ2 + 1 - minXJ2);
+            }
         }
 
 
@@ -326,6 +400,20 @@ int main()
             if(tecla == teclaDisparoJ2 && vidasJ2 > 0 && !disparoJ2){
                 disparar2();
             }
+        }
+
+        if(vidasJ1 == 0){
+            asteroidesJ1 = false;
+            disparoJ1 = false;
+            damePosicion(30, 30);
+            printf("Te muriste!!!");
+        }
+
+        if(vidasJ2 == 0){
+            asteroidesJ2 = false;
+            disparoJ2 = false;
+            damePosicion(100, 30);
+            printf("Te muriste!!!");
         }
 
         if(vidasJ1 == 0 && vidasJ2 == 0){
